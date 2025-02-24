@@ -95,3 +95,6 @@ export const logout =  (req, res) => {
         return res.status(500).json({message: "Server error"});
    }
 };
+
+//TO BE ABLE TO UPDATE THE PROFILE IMAGE WE NEED A SERVICE SO WE CAN UPLOAD THE IMAGE INTO (CLOUDINARY)
+export const updateProfile = async (req, res) => {};
