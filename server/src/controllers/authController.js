@@ -38,7 +38,10 @@ export const signup = async (req, res) => {
             //save user to db
             await newUser.save();
             res.status(201).json({
-                _id:newUser._id, fullName, email: newUser.email, profilePic: newUser.profilePic,
+                _id:newUser._id, 
+                fullName: newUser.fullName, 
+                email: newUser.email, 
+                profilePic: newUser.profilePic,
             });
 
         }else {
@@ -53,10 +56,42 @@ export const signup = async (req, res) => {
     }
 };
 
-export const login = (req, res) => {
-    res.send('login route')
+export const login = async (req, res) => {
+    const {email, password} = req.body
+    try {
+        const user = await User.findOne({email})
+
+        if(!user) {
+            return res.status(400).json({message: "Invalid Login details"});
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if(!isPasswordCorrect) {
+            return res.status(400).json({message: "Invalid Login details"});
+        }
+
+        // if password correct, generate tokem
+        generateToken(user._id, res)
+        
+        res.status(200).json({
+            _id:user._id, 
+            fullName: user.fullName, 
+            email: user.email, 
+            profilePic: user.profilePic,
+        });
+
+    } catch (error) {
+        console.log("Error in login details", error.message);
+        return res.status(500).json({message: "Server error"});
+    }
 };
 
-export const logout = (req, res) => {
-    res.send('logout route')
+export const logout =  (req, res) => {
+   try {
+        res.cookie("jwt", "", {maxAge:0})
+        return res.status(200).json({message: "Logout successful"});
+   } catch (error) {
+        console.log("Error in logout controller", error.message);
+        return res.status(500).json({message: "Server error"});
+   }
 };
