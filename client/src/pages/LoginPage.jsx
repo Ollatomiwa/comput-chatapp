@@ -1,7 +1,19 @@
 
 const LoginPage = () => {
   return (
-    <div>LoginPage</div>
+    <div>LoginPage
+
+
+
+
+
+
+      {/* RIGHT */}
+    <AuthImagePattern
+      title= "Join Our Growing Community"
+      subtitle = "Connect with families and friends, share moments and stay in touch with your loved ones"
+    />
+    </div>
   )
 }
 

@@ -1,7 +1,11 @@
 import { useState } from "react";
 import {useAuthStore} from "../store/useAuthStore"
+import AuthImagePattern from "../components/AuthImagePattern"
 import {MessageSquare, User, Mail, Lock, EyeOff, Eye, Loader2} from "lucide-react"
 import {Link} from "react-router-dom"
+import toast from "react-hot-toast";
+
+
 const SignUpPage = () => {
   const [showPassword, setShowPassword ] = useState(false)
   const [formData, setFormData] = useState({ 
@@ -10,13 +14,25 @@ const SignUpPage = () => {
     password: ""
   }); 
 
-  const {signUp, isSignUp} = useAuthStore();
-  const validatForm = () => {}
+  const {signUp, isSiginingUp} = useAuthStore();
+  const validatForm = () => {
+    if(!formData.fullName.trim()) return toast.error("Full name is required")
+    if(!formData.email.trim()) return toast.error("Email is required")
+    if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format")
+    if(!formData.password) return toast.error("Password is required")
+    if(formData.password.length < 6) return toast.error("Password must be atleast 6 characters ")
+
+    return true
+  }
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const success = validatForm()
+
+    if(success === true) signUp(formData)
   }
 
-  return <div className="min-h-screen grid lg:grid-cols-2">
+  return <div className="min-h-screen grid lg:grid-cols-2 ">
     {/* Left */}
     <div className="flex flex-col justify-center items-center p-6 sm:p-12">
 
@@ -24,7 +40,7 @@ const SignUpPage = () => {
         {/* LOGO */}
         <div className="text-center mb-8">
           <div className="flex flex-col items-center gap-2 group">
-            <div className="size-12 rounded-xl bg-primary flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+            <div className="size-12 rounded-xl bg-amber-400 flex items-center justify-center group-hover:bg-amber-600 transition-colors">
               <MessageSquare className="sizw-6 text-primary "/>
             </div>
             <h1 className="text-2xl font-bold mt-2">Create Account</h1>
@@ -45,7 +61,7 @@ const SignUpPage = () => {
                 type="text"
                 className={`input input-boarded w-full pl-20`}
                 placeholder="John Doe"
-                value={formData.fuLlName}
+                value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value})}
                 />
               </div>
@@ -87,7 +103,7 @@ const SignUpPage = () => {
                 <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center"
                  onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? (
-                      <EyeOff className="size-5 text-base-content/40" />
+                      <EyeOff className="size-5 text-black" />
                     ) : (
                       <Eye className="size-5 text-base-content/40" />
                     )
@@ -96,8 +112,8 @@ const SignUpPage = () => {
               </div>
             </div>
             {/* button */}
-            <button type="submit" className="btn btn-primary w-full" disabled={isSignUp}>
-                {isSignUp ? (
+            <button type="submit" className="btn btn-md text-xl bg-amber-500 w-full" disabled={isSiginingUp}>
+                {isSiginingUp ? (
                   <>
                   <Loader2 className="size-5 animate-spin" />
                   Loading...
@@ -111,7 +127,7 @@ const SignUpPage = () => {
         <div className="text-center">
           <p className="text-base-content/60">
                 Already have an account? {" "}
-                <Link to="/login" className="link link-primary"> Sign in </Link>
+                <Link to="/login" className="link text-amber-500"> Sign in </Link>
           </p>
         </div>
       </div>
@@ -120,7 +136,7 @@ const SignUpPage = () => {
     {/* RIGHT */}
     <AuthImagePattern
       title= "Join Our Growing Community"
-      subtitle = "Connect woth families and friends, share moments and stay in touch with your loved ones"
+      subtitle = "Connect with families and friends, share moments and stay in touch with your loved ones"
     />
   </div>
   
